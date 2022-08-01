@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "ws-pakotinia": {
+      "hosting": {
+        "m": [
+          "ws-pakotinia"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "ws-pakotinia"
+  }
+}

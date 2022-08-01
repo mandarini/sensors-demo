@@ -5,7 +5,9 @@
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/apps/m",
         "index": "apps/m/src/index.html",
@@ -13,8 +15,13 @@
         "polyfills": "apps/m/src/polyfills.ts",
         "tsConfig": "apps/m/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
-        "assets": ["apps/m/src/favicon.ico", "apps/m/src/assets"],
-        "styles": ["apps/m/src/styles.scss"],
+        "assets": [
+          "apps/m/src/favicon.ico",
+          "apps/m/src/assets"
+        ],
+        "styles": [
+          "apps/m/src/styles.scss"
+        ],
         "scripts": []
       },
       "configurations": {
@@ -71,15 +78,30 @@
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "options": {
-        "lintFilePatterns": ["apps/m/**/*.ts", "apps/m/**/*.html"]
+        "lintFilePatterns": [
+          "apps/m/**/*.ts",
+          "apps/m/**/*.html"
+        ]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/m"],
+      "outputs": [
+        "coverage/apps/m"
+      ],
       "options": {
         "jestConfig": "apps/m/jest.config.ts",
         "passWithNoTests": true
+      }
+    },
+    "deploy": {
+      "executor": "@angular/fire:deploy",
+      "options": {
+        "prerender": false,
+        "ssr": false,
+        "browserTarget": "m:build:production",
+        "firebaseProject": "ws-pakotinia",
+        "firebaseHostingSite": "ws-pakotinia"
       }
     }
   },
