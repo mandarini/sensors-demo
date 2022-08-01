@@ -1,1 +1,95 @@
-/* You can add global styles to this file, and also import other style files */
+.full {
+  width: 95%;
+  padding: 20px;
+}
+
+.full h1 {
+  color: white;
+}
+
+.received-data {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+table,
+td {
+  background-color: white;
+  font-size: 20px;
+  border: 1px solid purple;
+}
+
+td.data {
+  width: 50px;
+  background-color: lightgrey;
+}
+
+.playground {
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  margin-bottom: 60px;
+}
+
+.buttons button {
+  padding: 10px;
+  background-color: aquamarine;
+  border: none;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border-radius: 5px;
+  color: darkslategray;
+  font-weight: bolder;
+  text-transform: uppercase;
+}
+
+.buttons button:active,
+.buttons button:hover {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  color: white;
+}
+
+svg.catwalk {
+  background-color: white;
+  height: 180px;
+  width: 1080px;
+  border: 3px solid lightcoral;
+}
+
+svg.clock {
+  height: 600px;
+  width: 600px;
+}
+
+svg.clouds {
+  width: 700px;
+  height: 450px;
+}
+
+.visible {
+  visibility: visible;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.game {
+  display: flex;
+  justify-content: center;
+}
+
+.playground h2 {
+  text-align: center;
+  color: #ffdc72;
+}
