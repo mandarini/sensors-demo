@@ -39,18 +39,27 @@ td.data {
   flex-direction: row;
   justify-content: space-around;
   margin-bottom: 60px;
+  button {
+    background-color: aquamarine;
+    color: darkslategray;
+  }
 }
 
-.buttons button {
+button {
   padding: 10px;
-  background-color: aquamarine;
+  background-color: rgb(221, 96, 163);
   border: none;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   border-radius: 5px;
-  color: darkslategray;
+  color: white;
   font-weight: bolder;
   text-transform: uppercase;
+}
+
+button:disabled {
+  background-color: lightgrey;
+  color: black;
 }
 
 .buttons button:active,
@@ -91,7 +100,7 @@ svg.clouds {
 
 .playground h2 {
   text-align: center;
-  color: #ffdc72;
+  color: #be8e00;
 }
 
 .group-names {
@@ -104,6 +113,56 @@ svg.clouds {
     padding: 8px;
     li {
       list-style: none;
+    }
+  }
+}
+
+.user-number {
+  width: 50px;
+}
+
+.user-inputs {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+
+  .select-users {
+    font-size: 24px;
+    label {
+      padding-right: 16px;
+    }
+    select {
+      height: 48px;
+    }
+  }
+
+  .max-users {
+    span {
+      font-size: 24px;
+      padding-right: 16px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .user-inputs {
+    flex-direction: column;
+
+    .select-users {
+      font-size: 16px;
+      label {
+        padding-right: 8px;
+      }
+      select {
+        height: 32px;
+      }
+    }
+
+    .max-users {
+      span {
+        font-size: 16px;
+        padding-right: 8px;
+      }
     }
   }
 }

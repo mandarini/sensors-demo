@@ -1,5 +1,17 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { WebsocketService } from '@sensor-demo/motions-data';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnDestroy,
+  ViewChild,
+} from '@angular/core';
+import { Store } from '@ngrx/store';
+import {
+  getMotion,
+  MotionsState,
+  WebsocketService,
+} from '@sensor-demo/motions-data';
+import { MotionMessage } from '@sensor-demo/utils';
 import {
   Gyroscope,
   Sensor,
@@ -7,6 +19,7 @@ import {
   AbsoluteOrientationSensor,
   Accelerometer,
 } from 'motion-sensors-polyfill';
+import { filter, Subscription } from 'rxjs';
 
 declare class AmbientLightSensor extends Sensor {
   constructor(options?: { frequency?: number });
@@ -18,7 +31,7 @@ declare class AmbientLightSensor extends Sensor {
   templateUrl: './control.component.html',
   styleUrls: ['./control.component.scss'],
 })
-export class ControlComponent implements AfterViewInit {
+export class ControlComponent implements AfterViewInit, OnDestroy {
   logged = false;
   lightSensor: AmbientLightSensor | undefined;
   gyroscope: Gyroscope | undefined;
@@ -27,33 +40,75 @@ export class ControlComponent implements AfterViewInit {
   absoluteOrientationSensor: AbsoluteOrientationSensor | undefined;
 
   @ViewChild('username') userName: ElementRef;
+  username: string;
+  private subscription: Subscription;
 
-  private username: string;
+  constructor(
+    private websocketService: WebsocketService,
+    private store: Store<MotionsState>
+  ) {}
 
-  constructor(private websocketService: WebsocketService) {}
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
 
   ngAfterViewInit() {
-    window.addEventListener(
-      'devicemotion',
-      (event: DeviceMotionEvent) => {
-        const x = event.accelerationIncludingGravity?.x;
-        const y = event.accelerationIncludingGravity?.y;
-        const z = event.accelerationIncludingGravity?.z;
-        const rot = event.rotationRate?.alpha;
-        if (this.logged) {
-          this.websocketService.sendMessage({
-            username: this.username,
-            type: 'motion',
-            x: x as number,
-            y: y as number,
-            z: z as number,
-            rot: rot as number,
-          });
+    this.subscription = this.store
+      .select(getMotion)
+      .pipe(filter((motion) => !!motion))
+      .subscribe((motion: MotionMessage | null) => {
+        if (motion?.type === 'deny' && motion.username === this.username) {
+          window.alert('Too many users - try again later');
+          this.websocketService.close();
         }
-      },
-      true
-    );
+        if (
+          motion?.type === 'login-success' &&
+          motion.username === this.username
+        ) {
+          this.loginSuccess();
+        }
+      });
+  }
 
+  login() {
+    this.username = (this.userName.nativeElement as HTMLInputElement).value;
+    this.username = this.username.trim();
+    if (!this.username || this.username.length === 0) {
+      window.alert('Please enter a username');
+      return;
+    }
+    this.websocketService.connect();
+    this.websocketService.sendMessage({
+      username: this.username,
+      type: 'login',
+    });
+  }
+
+  loginSuccess() {
+    this.logged = true;
+    window.alert('Will request permission to access sensors');
+    this.startAmbientLightSensor();
+    this.startGyroscope();
+    this.startRelativeOrientation();
+    this.startAbsoluteOrientation();
+    this.startAccelerometer();
+    this.startDeviceOrientation();
+  }
+
+  logout(): void {
+    this.logged = false;
+    this.websocketService.sendMessage({
+      username: this.username,
+      type: 'logout',
+    });
+    this.lightSensor?.stop();
+    this.gyroscope?.stop();
+    this.accelerometer?.stop();
+    this.relativeOrientationSensor?.stop();
+    this.absoluteOrientationSensor?.stop();
+  }
+
+  startDeviceOrientation() {
     window.addEventListener(
       'deviceorientation',
       (event) => {
@@ -72,39 +127,6 @@ export class ControlComponent implements AfterViewInit {
       },
       true
     );
-  }
-
-  login() {
-    this.username = (this.userName.nativeElement as HTMLInputElement).value;
-    this.username = this.username.trim();
-    if (!this.username || this.username.length === 0) {
-      window.alert('Please enter a username');
-      return;
-    }
-    this.websocketService.sendMessage({
-      username: this.username,
-      type: 'login',
-    });
-    this.logged = true;
-    window.alert('Will request permission to access sensors');
-    this.startAmbientLightSensor();
-    this.startGyroscope();
-    this.startRelativeOrientation();
-    this.startAbsoluteOrientation();
-    this.startAccelerometer();
-  }
-
-  logout(): void {
-    this.logged = false;
-    this.websocketService.sendMessage({
-      username: this.username,
-      type: 'logout',
-    });
-    this.lightSensor?.stop();
-    this.gyroscope?.stop();
-    this.accelerometer?.stop();
-    this.relativeOrientationSensor?.stop();
-    this.absoluteOrientationSensor?.stop();
   }
 
   startAmbientLightSensor() {

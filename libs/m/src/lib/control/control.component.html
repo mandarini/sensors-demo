@@ -3,5 +3,7 @@
   <input *ngIf="!logged" type="text" #username />
   <button (click)="login()" *ngIf="!logged">Log IN</button>
   <button (click)="logout()" *ngIf="logged">Log out</button>
-  <h3 *ngIf="logged">successfull log in</h3>
+  <h3 *ngIf="logged">
+    Logged in as <span class="username">{{ username }}</span>
+  </h3>
 </section>

@@ -1,17 +1,29 @@
 <div class="full">
-  <h1>
-    Client | {{ devices.length }} active user<ng-container
-      *ngIf="devices.length > 1"
-      >s</ng-container
-    >
-  </h1>
-  <h3>maximum users allowed: {{ maxusers }}</h3>
-  <input
-    type="number"
-    #box
-    (keyup.enter)="onEnter(box.value)"
-    [value]="maxusers"
-  />
+  <div class="user-management">
+    <h1>
+      {{ devices.length }} active user<ng-container *ngIf="devices.length !== 1"
+        >s</ng-container
+      >
+    </h1>
+    <div class="user-inputs">
+      <div class="max-users">
+        <span>Max users allowed:</span>
+        <input class="user-number" type="number" #box [(ngModel)]="maxusers" />
+      </div>
+      <div class="select-users">
+        <label>Allow users:</label>
+        <select class="select-user" #activeUser [(ngModel)]="allowedUser">
+          <option value="" disabled>Choose a User</option>
+          <option value="allow-none">Closed to all users</option>
+          <option value="allow-all-users">Open to all users</option>
+          <option *ngFor="let user of devices" [ngValue]="user">
+            {{ user }}
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+
   <div class="received-data">
     <table>
       <tr>
@@ -109,7 +121,14 @@
     </div>
     <h2 *ngIf="compete">Compete mode ON</h2>
     <div *ngIf="compete" class="group-names">
-      <button (click)="startCompeting = true">START</button>
+      <button
+        *ngIf="!winner || !winner?.length"
+        (click)="startCompeting = true"
+        [disabled]="startCompeting"
+      >
+        START
+      </button>
+      <button *ngIf="winner?.length" (click)="reset()">RESET</button>
       <h3>Competing devices:</h3>
       <table>
         <tr>

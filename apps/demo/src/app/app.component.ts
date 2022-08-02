@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import * as io from 'socket.io-client';
-import { Store } from '@ngrx/store';
-import { loadMotionsSuccess, MotionsState } from '@sensor-demo/motions-data';
+import { WebsocketService } from '@sensor-demo/motions-data';
 
 @Component({
   selector: 'sensor-demo-root',
@@ -9,19 +7,9 @@ import { loadMotionsSuccess, MotionsState } from '@sensor-demo/motions-data';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-  private socket;
-
-  constructor(private store: Store<MotionsState>) {
-    this.socket = io.connect('https://wsdemokat-lk52ivhmxa-lm.a.run.app');
-  }
+  constructor(private websocketService: WebsocketService) {}
 
   ngOnInit() {
-    this.socket.on('drawing', (data) => {
-      this.store.dispatch(
-        loadMotionsSuccess({
-          motion: data,
-        })
-      );
-    });
+    this.websocketService.connect();
   }
 }

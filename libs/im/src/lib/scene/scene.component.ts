@@ -7,7 +7,11 @@ import {
 } from '@angular/core';
 import * as THREE from 'three';
 import { mapNumber, MotionMessage } from '@sensor-demo/utils';
-import { getMotion, MotionsState } from '@sensor-demo/motions-data';
+import {
+  getMotion,
+  MotionsState,
+  WebsocketService,
+} from '@sensor-demo/motions-data';
 import { Store } from '@ngrx/store';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
@@ -29,8 +33,10 @@ export class SceneComponent implements AfterViewInit, OnDestroy {
   devices: string[] = [];
   groupA: string[] = [];
   groupB: string[] = [];
-  winner: string;
+  winner: string | undefined;
+  allowedUser: string;
 
+  @ViewChild('activeUser') activeUser: ElementRef;
   @ViewChild('container') elementRef: ElementRef;
   private container: HTMLElement;
   private scene: THREE.Scene;
@@ -39,7 +45,10 @@ export class SceneComponent implements AfterViewInit, OnDestroy {
   private cube: THREE.Mesh;
   private subscription: Subscription;
 
-  constructor(private store: Store<MotionsState>) {}
+  constructor(
+    private store: Store<MotionsState>,
+    private websocketService: WebsocketService
+  ) {}
 
   ngAfterViewInit() {
     this.container = this.elementRef.nativeElement;
@@ -53,12 +62,32 @@ export class SceneComponent implements AfterViewInit, OnDestroy {
           return;
         }
 
-        if (this.devices.length < this.maxusers) {
-          if (!this.devices.includes(motion.username)) {
-            this.devices.push(motion.username);
-          }
+        if (motion.type === 'login' && this.devices.length === this.maxusers) {
+          this.websocketService.sendMessage({
+            username: motion.username,
+            type: 'deny',
+          });
+          return;
         }
-        if (this.devices.includes(motion.username)) {
+
+        if (
+          motion.type === 'login' &&
+          !this.devices.includes(motion.username) &&
+          this.devices.length < this.maxusers
+        ) {
+          this.devices.push(motion.username);
+          this.websocketService.sendMessage({
+            username: motion.username,
+            type: 'login-success',
+          });
+        }
+
+        const shouldItStartAnimating =
+          this.allowedUser === 'allow-all-users'
+            ? this.devices.includes(motion.username)
+            : this.allowedUser === motion.username;
+
+        if (shouldItStartAnimating) {
           switch (motion.type) {
             case 'orientation':
               // Move the cat or the clock
@@ -87,6 +116,8 @@ export class SceneComponent implements AfterViewInit, OnDestroy {
               break;
             case 'logout':
               this.devices.splice(this.devices.indexOf(motion.username), 1);
+              console.log('User logged out: ', motion.username);
+              console.log(this.devices);
               break;
             default:
               break;
@@ -172,28 +203,22 @@ export class SceneComponent implements AfterViewInit, OnDestroy {
       this.groupA = this.devices?.slice(0, Math.ceil(this.devices?.length / 2));
       this.groupB = this.devices?.slice(Math.ceil(this.devices?.length / 2));
       const addedMotion = Math.abs(x) + Math.abs(y) + Math.abs(z);
-      // console.log('ADDED MOTOON', addedMotion);
       const normalizedNumber = mapNumber(addedMotion, 0, 130, 0, 1080);
-      console.log('normalizedNumber', normalizedNumber);
 
       if (this.startCompeting) {
         if (this.groupA.includes(userName)) {
-          console.log('NEW ATTR', current - normalizedNumber / 10);
           document
             ?.getElementById('cat')
             ?.setAttribute('x', (current - normalizedNumber / 10).toString());
           if (current - normalizedNumber / 10 <= 0) {
-            // this.compete = false;
             this.startCompeting = false;
             this.winner = 'Group A';
           }
         } else if (this.groupB.includes(userName)) {
-          console.log('NEW ATTR', current + normalizedNumber / 10);
           document
             ?.getElementById('cat')
             ?.setAttribute('x', (current + normalizedNumber / 10).toString());
           if (current + normalizedNumber / 10 >= 1080) {
-            // this.compete = false;
             this.startCompeting = false;
             this.winner = 'Group B';
           }
@@ -203,7 +228,7 @@ export class SceneComponent implements AfterViewInit, OnDestroy {
   }
 
   rotateCube(quaternion: number[]) {
-    this.cube.quaternion.fromArray(quaternion).invert();
+    this.cube?.quaternion.fromArray(quaternion).invert();
     (document.getElementById('quaternion1') as HTMLElement).innerHTML =
       Math.round(quaternion[0] as number).toString();
     (document.getElementById('quaternion2') as HTMLElement).innerHTML =
@@ -314,6 +339,14 @@ export class SceneComponent implements AfterViewInit, OnDestroy {
       this.startCompeting = false;
       this.clouds = true;
     }
+  }
+
+  reset() {
+    setTimeout(() => {
+      document?.getElementById('cat')?.setAttribute('x', `${1080 / 2 - 45}`);
+    }, 300);
+    this.startCompeting = false;
+    this.winner = undefined;
   }
 
   onEnter(value: string) {

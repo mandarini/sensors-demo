@@ -2,3 +2,12 @@
 body {
   font-family: sans-serif;
 }
+
+input,
+select {
+  margin-bottom: 32px;
+  height: 32px;
+  line-height: 24px;
+  font-size: 24px;
+  padding: 8px;
+}
