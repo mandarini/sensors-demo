@@ -1,0 +1,7 @@
+<section>
+  <h1>Application Running!</h1>
+  <input *ngIf="!logged" type="text" #username />
+  <button (click)="login()" *ngIf="!logged">Log IN</button>
+  <button (click)="logout()" *ngIf="logged">Log out</button>
+  <h3 *ngIf="logged">successfull log in</h3>
+</section>

@@ -1,0 +1,251 @@
+<div class="full">
+  <h1>
+    Client | {{ devices.length }} active user<ng-container
+      *ngIf="devices.length > 1"
+      >s</ng-container
+    >
+  </h1>
+  <h3>maximum users allowed: {{ maxusers }}</h3>
+  <input
+    type="number"
+    #box
+    (keyup.enter)="onEnter(box.value)"
+    [value]="maxusers"
+  />
+  <div class="received-data">
+    <table>
+      <tr>
+        <th>Accelaration</th>
+      </tr>
+      <tr>
+        <td>x</td>
+        <td class="data" id="x"></td>
+      </tr>
+      <tr>
+        <td>y</td>
+        <td class="data" id="y"></td>
+      </tr>
+      <tr>
+        <td>z</td>
+        <td class="data" id="z"></td>
+      </tr>
+    </table>
+
+    <table>
+      <tr>
+        <th>DeviceOrientationEvent</th>
+      </tr>
+      <tr>
+        <td>Motion around Z axis (alpha) (0 to 360)</td>
+        <td class="data" id="alpha"></td>
+      </tr>
+      <tr>
+        <td>Motion around X axis (beta) (-180 to 180)</td>
+        <td class="data" id="beta"></td>
+      </tr>
+      <tr>
+        <td>Motion around Y axis (gamma) (-90 to 90)</td>
+        <td class="data" id="gamma"></td>
+      </tr>
+    </table>
+
+    <table>
+      <tr>
+        <th>Relative Orientation quaternion</th>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td class="data" id="quaternion1"></td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td class="data" id="quaternion2"></td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td class="data" id="quaternion3"></td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td class="data" id="quaternion4"></td>
+      </tr>
+    </table>
+
+    <table>
+      <tr>
+        <th>DeviceLightEvent</th>
+      </tr>
+      <tr>
+        <td>Ambient light <em>(lux)</em></td>
+        <td class="data" id="light"></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="playground">
+    <div class="buttons">
+      <button (click)="showAnimation('kitty')">Show Kitty</button>
+      <button (click)="showAnimation('clock')">Show Clock</button>
+      <button (click)="showAnimation('cube')">Show Cube</button>
+      <button (click)="showAnimation('clouds')">Show Scenery</button>
+      <button (click)="showAnimation('compete')">Compete</button>
+    </div>
+    <div class="game" #catwalk *ngIf="kitty || compete">
+      <svg
+        class="catwalk"
+        id="svg"
+        version="1.1"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <image
+          x="0"
+          y="40"
+          id="cat"
+          href="https://i.giphy.com/media/Z55zlzompYguc/giphy.webp"
+          height="100"
+          width="100"
+        />
+      </svg>
+    </div>
+    <h2 *ngIf="compete">Compete mode ON</h2>
+    <div *ngIf="compete" class="group-names">
+      <button (click)="startCompeting = true">START</button>
+      <h3>Competing devices:</h3>
+      <table>
+        <tr>
+          <th>Group A</th>
+          <th>Group B</th>
+        </tr>
+        <tr>
+          <td>
+            <ul>
+              <li *ngFor="let deviceA of groupA">
+                {{ deviceA }}
+              </li>
+            </ul>
+          </td>
+          <td>
+            <ul>
+              <li *ngFor="let deviceB of groupB">
+                {{ deviceB }}
+              </li>
+            </ul>
+          </td>
+        </tr>
+      </table>
+      <h3 *ngIf="winner">Winner: {{ winner }}</h3>
+    </div>
+    <div class="game" #clock *ngIf="clock">
+      <svg class="clock" width="600" height="600">
+        <g>
+          <circle
+            id="circle"
+            style="stroke: #fff; stroke-width: 12px; fill: #20b7af"
+            cx="300"
+            cy="300"
+            r="300"
+          ></circle>
+        </g>
+        <g>
+          <line
+            id="clockhand"
+            transform="rotate(0 300 300)"
+            x1="300"
+            y1="300"
+            x2="300"
+            y2="40"
+            style="stroke-width: 8px; stroke: #fdfdfd"
+          ></line>
+        </g>
+        <circle
+          id="center"
+          style="fill: #128a86; stroke: #c1efed; stroke-width: 2px"
+          cx="300"
+          cy="300"
+          r="5"
+        ></circle>
+      </svg>
+    </div>
+    <div class="game" #clouds *ngIf="clouds">
+      <svg class="clouds" version="1.1" xmlns="http://www.w3.org/2000/svg">
+        <rect
+          id="sky"
+          x="0"
+          y="0"
+          width="700"
+          height="300"
+          style="fill: #9dceff"
+        />
+        <rect x="0" y="300" width="700" height="150" style="fill: green" />
+        <rect x="500" y="230" width="90" height="110" style="fill: #ff64b3" />
+        <polygon points="500 230,590 230, 545 190" style="fill: #ffa405" />
+        <rect x="150" y="210" width="15" height="140" style="fill: #7b3925" />
+        <g fill="#64a34e">
+          <circle cx="150" cy="210" r="45" />
+          <circle cx="180" cy="200" r="45" />
+          <circle cx="120" cy="190" r="50" />
+          <circle cx="170" cy="150" r="35" />
+        </g>
+        <g id="cloud-1" transform="translate(-190)" fill="#989898">
+          <circle cx="90" cy="50" r="25" />
+          <circle cx="110" cy="50" r="25" />
+          <circle cx="120" cy="60" r="35" />
+          <circle cx="120" cy="30" r="25" />
+          <circle cx="140" cy="30" r="25" />
+          <circle cx="130" cy="60" r="30" />
+          <circle cx="160" cy="60" r="30" />
+        </g>
+        <g id="cloud-2" transform="translate(-300)" fill="#989898">
+          <circle cx="200" cy="100" r="25" />
+          <circle cx="220" cy="100" r="25" />
+          <circle cx="230" cy="110" r="35" />
+          <circle cx="230" cy="80" r="25" />
+          <circle cx="250" cy="80" r="25" />
+          <circle cx="240" cy="110" r="30" />
+          <circle cx="270" cy="110" r="30" />
+        </g>
+        <g id="cloud-3" transform="translate(-400)" fill="#989898">
+          <circle cx="290" cy="50" r="25" />
+          <circle cx="310" cy="50" r="25" />
+          <circle cx="320" cy="60" r="35" />
+          <circle cx="320" cy="30" r="25" />
+          <circle cx="340" cy="30" r="25" />
+          <circle cx="330" cy="60" r="30" />
+          <circle cx="360" cy="60" r="30" />
+        </g>
+        <g id="cloud-4" transform="translate(600)" fill="#989898">
+          <circle cx="490" cy="100" r="25" />
+          <circle cx="510" cy="100" r="25" />
+          <circle cx="520" cy="110" r="35" />
+          <circle cx="520" cy="80" r="25" />
+          <circle cx="540" cy="80" r="25" />
+          <circle cx="530" cy="110" r="30" />
+          <circle cx="560" cy="110" r="30" />
+        </g>
+        <g id="cloud-5" transform="translate(600)" fill="#989898">
+          <circle cx="440" cy="60" r="25" />
+          <circle cx="460" cy="60" r="25" />
+          <circle cx="470" cy="70" r="35" />
+          <circle cx="470" cy="40" r="25" />
+          <circle cx="490" cy="40" r="25" />
+          <circle cx="480" cy="70" r="30" />
+          <circle cx="520" cy="70" r="30" />
+        </g>
+        <g id="cloud-6" transform="translate(600)" fill="#989898">
+          <circle cx="340" cy="160" r="25" />
+          <circle cx="360" cy="160" r="25" />
+          <circle cx="370" cy="170" r="35" />
+          <circle cx="370" cy="140" r="25" />
+          <circle cx="390" cy="140" r="25" />
+          <circle cx="380" cy="170" r="30" />
+          <circle cx="420" cy="170" r="30" />
+        </g>
+      </svg>
+    </div>
+    <div
+      class="game"
+      #container
+      [ngClass]="{ visible: three, hidden: !three }"
+    ></div>
+  </div>
+</div>

@@ -16,6 +16,9 @@
     "strictPropertyInitialization": false,
     "baseUrl": ".",
     "paths": {
+      "@sensor-demo/im": ["libs/im/src/index.ts"],
+      "@sensor-demo/m": ["libs/m/src/index.ts"],
+      "@sensor-demo/motions-data": ["libs/motions-data/src/index.ts"],
       "@sensor-demo/utils": ["libs/utils/src/index.ts"]
     }
   },

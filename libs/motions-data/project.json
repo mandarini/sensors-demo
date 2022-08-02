@@ -1,0 +1,41 @@
+{
+  "projectType": "library",
+  "sourceRoot": "libs/motions-data/src",
+  "prefix": "sensor-demo",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/angular:ng-packagr-lite",
+      "outputs": ["dist/libs/motions-data"],
+      "options": {
+        "project": "libs/motions-data/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/motions-data/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/motions-data/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/motions-data"],
+      "options": {
+        "jestConfig": "libs/motions-data/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "libs/motions-data/**/*.ts",
+          "libs/motions-data/**/*.html"
+        ]
+      }
+    }
+  },
+  "tags": []
+}

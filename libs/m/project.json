@@ -1,0 +1,38 @@
+{
+  "projectType": "library",
+  "sourceRoot": "libs/m/src",
+  "prefix": "sensor-demo",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/angular:ng-packagr-lite",
+      "outputs": ["dist/libs/m"],
+      "options": {
+        "project": "libs/m/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/m/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/m/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/m"],
+      "options": {
+        "jestConfig": "libs/m/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": ["libs/m/**/*.ts", "libs/m/**/*.html"]
+      }
+    }
+  },
+  "tags": []
+}

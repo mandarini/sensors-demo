@@ -1,10 +1,8 @@
 {
   "hosting": {
-    "target": "m",
-    "public": "dist/apps/m",
-    "ignore": [
-      "**/.*"
-    ],
+    "target": "demo",
+    "public": "dist/apps/demo",
+    "ignore": ["**/.*"],
     "headers": [
       {
         "source": "*.[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f].+(css|js)",

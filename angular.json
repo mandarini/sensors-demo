@@ -4,10 +4,10 @@
   "projects": {
     "demo": "apps/demo",
     "demo-e2e": "apps/demo-e2e",
-    "im": "apps/im",
-    "im-e2e": "apps/im-e2e",
-    "m": "apps/m",
-    "m-e2e": "apps/m-e2e",
-    "utils": "libs/utils"
+    "im": "libs/im",
+    "m": "libs/m",
+    "motions-data": "libs/motions-data",
+    "utils": "libs/utils",
+    "ws": "apps/ws"
   }
 }

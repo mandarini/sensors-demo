@@ -2,7 +2,7 @@
   "targets": {
     "ws-pakotinia": {
       "hosting": {
-        "m": [
+        "demo": [
           "ws-pakotinia"
         ]
       }
