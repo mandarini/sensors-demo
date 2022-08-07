@@ -1,4 +1,4 @@
-# Generic Sensors API demo
+# Generic Sensor API demo
 
 _translate physical motion to virtual motion across devices_
 
@@ -14,10 +14,11 @@ This is a demo for the Generic Sensor API for the web. You can see its live vers
   - [On your computer](#on-your-computer)
   - [On your phone](#on-your-phone)
 - [How to set up on your machine](#how-to-set-up-on-your-machine)
+- [Useful links and acknowledgements](#useful-links-and-acknowledgements)
 
 ## Purpose
 
-The general intention of this app is to demo the [Generic Sensors API](https://www.w3.org/TR/generic-sensor), showcase it's possibilities, and provide some code samples.
+The general intention of this app is to demo the [Generic Sensor API](https://www.w3.org/TR/generic-sensor), showcase it's possibilities, and provide some code samples.
 
 This is achieved in this specific demo, by showing how you can turn your phone (which has access to the sensors) to a remote control (a gamepad) for an application that's running on your computer (which - usually - does not have motion sensors).
 
@@ -63,21 +64,47 @@ This number specifies how many simultaneous user connections the app allows. If 
 
 ##### Catwalk
 
-Use your device's Gyroscope readings.
+This game uses the DeviceOrientation Event, which does not comply to the Generic Sensor API. It does however give us access to a device sensor, which we will be using. The orientation that this event provides, is based on the accelerometer and the gyroscope of the device.
+
+In this case, to animate the cat, we are taking into account just the alpha attribute. Place your phone flat on a horizontal surface and spin it around. This change in orientation is only what's affecting the movement of the cat.
+
+##### Gyrocat
+
+This game uses the Gyroscope.
+
+In this case, to animate the cat, we are taking into account just the x attribute of the Gyroscope, which represents the current angular velocity around X-axis. Place your phone flat on a horizontal surface and spin it around. The faster you move it, the further the cat will proceed.
+
+We are taking the reading from the x attribute, we are taking its absolute value, we are mapping it between 0 and 100 (to be able to see the motion better, because the actual values are too low and it would be tiring). And then we adding the valu each time to the position of the cat.
 
 ##### Clock
 
-Same as kitty. Use your device's Gyroscope readings.
+This game uses the DeviceOrientation Event, which does not comply to the Generic Sensor API. It does however give us access to a device sensor, which we will be using. The orientation that this event provides, is based on the accelerometer and the gyroscope of the device.
+
+In this case, to animate the clock hand, we are taking into account just the beta attribute. Hold your phone vertically. Then move it towards you, so that the screen faces down. Think as if the axis of rotation is along the bottom of your phone. This change in orientation is only what's affecting the movement of the clock hand.
 
 ##### Cube
 
+This game uses the RelativeOrientationSensor. To provide the readings, it relies on the Gyroscope and the Accelerometer of the device.
+
+The readings which the RelativeOrientationSensor gives us is in the form of a quartenion. A quartenion is a "four-element FrozenArray whose elements contain the components of the unit quaternion representing the device orientation" ([ref](https://www.w3.org/TR/orientation-sensor/#orientationsensor-quaternion)).
+
+We are using a three.js cube model which accepts directly a quartenion to describe it's rotation matrix.
+
+Hold your phone in your hand and move it around. You can see the cube responding to your movement.
+
 ##### Sunny day
 
-Use your device's Ambient Light Sensor. As the light is less, the clouds cover this nice little house of the prairie.
+Use your device's Ambient Light Sensor. The Ambient Light Sensor returns the current light level or illuminance. This is a value that represents the ambient light level around the hosting device. Its unit is the lux (lx) ([ref](https://www.w3.org/TR/ambient-light/#model)).
+
+As the light decreases, the clouds cover this nice little house of the prairie.
+
+To play this game, you will need to enable the `chrome://flags/#enable-generic-sensor-extra-classes` Chrome flag.
 
 ##### Compete
 
-This is played with two users. It uses the device's Accelerometer. The faster a device accelerates, the more the kitty moves. Whoever accelerates more, wins.
+This is played with two users. It uses the device's Accelerometer. The faster a device accelerates, the more the kitty moves. Whoever accelerates more, wins. The game takes all 3 readings of the accelerometer (accelaration on the x, y and z axes), adds up their absolute values, and does a small adjustment to the resulting number - a calibration. Then, it uses the resulting number to increase the position of the cat horizontally.
+
+The team who "accelarates" more (moves their phones faster), will add more distance covered to the kitty, and the kitty will reach the end faster. Then that team will be the winning team.
 
 _([back to contents](#contents))_
 
@@ -196,8 +223,20 @@ Go to your [`websocket.service.ts`](libs/motions-data/src/lib/websocket.service.
 
 Now, you're all set up!
 
-## Notes
+### Notes
 
 Once you set up and deploy your WebSocket server, you can test your web app from your localhost, too.
 
 _([back to contents](#contents))_
+
+## Useful Links and Acknowledgements
+
+Building this app would not have been possible if I had not read the following articles:
+
+- [https://www.w3.org/TR/generic-sensor/](https://www.w3.org/TR/generic-sensor/)
+- [https://intel.github.io/generic-sensor-demos/](https://intel.github.io/generic-sensor-demos/)
+- [https://web.dev/generic-sensor/](https://web.dev/generic-sensor/)
+
+And also, thanks to my friend [Kenneth](https://github.com/kenchris) for answering my questions!
+
+It's good to mention that the first time I demo'ed a version of this was in Vienna, on May 18th, 2018, at the WeAreDevelopers conference. [Here's the YouTube link](https://youtu.be/H6L4XT7alXs) of my talk!
