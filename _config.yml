@@ -1,1 +1,4 @@
 theme: jekyll-theme-minimal
+title: Generic Sensors API demo
+description: A demo for the Generic Sensors API - remote control a web app from your phone
+logo: monster5.png
