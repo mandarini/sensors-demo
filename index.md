@@ -1,6 +1,6 @@
-# SensorDemo
+# Generic Sensors API demo
 
-_(this project was generated using [Nx](https://nx.dev))_
+_translate physical motion to virtual motion across devices_
 
 This is a demo for the Generic Sensor API for the web. You can see its live version in the following link: [ws-pakotinia.web.app](https://ws-pakotinia.web.app).
 
@@ -21,7 +21,7 @@ The general intention of this app is to demo the [Generic Sensors API](https://w
 
 This is achieved in this specific demo, by showing how you can turn your phone (which has access to the sensors) to a remote control (a gamepad) for an application that's running on your computer (which - usually - does not have motion sensors).
 
-The general idea is to "translate physical motion to virtual motion", remotely.
+The general idea is to **"translate physical motion to virtual motion"**, remotely.
 
 _([back to contents](#contents))_
 
@@ -102,7 +102,7 @@ _([back to contents](#contents))_
 
 ### Clone + build
 
-This project is using Nx. You can clone the repo, install the dependencies and build each app very easily:
+This project is using [Nx](https://nx.dev). You can clone the repo, install the dependencies and build each app very easily:
 
 1. Clone the repo
 

@@ -1,0 +1,18 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+a {
+  color: rgb(198, 73, 183);
+}
+
+a:hover,
+a:active,
+a:focus {
+  color: rgb(127, 73, 198);
+}
+
+a:visited {
+  color: rgb(102, 73, 155);
+}
