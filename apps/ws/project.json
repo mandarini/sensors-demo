@@ -16,13 +16,7 @@
         "production": {
           "optimization": true,
           "extractLicenses": true,
-          "inspect": false,
-          "fileReplacements": [
-            {
-              "replace": "apps/ws/src/environments/environment.js",
-              "with": "apps/ws/src/environments/environment.prod.js"
-            }
-          ]
+          "inspect": false
         }
       }
     },

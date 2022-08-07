@@ -19,6 +19,30 @@ nav {
   }
 }
 
+footer {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: space-around;
+
+  a {
+    cursor: pointer;
+    text-decoration: none;
+    color: rgb(198, 73, 183);
+  }
+
+  a:hover,
+  a:active,
+  a:focus {
+    color: rgb(127, 73, 198);
+  }
+
+  a:visited {
+    color: rgb(164, 57, 152);
+  }
+}
+
 @media (max-width: 768px) {
   nav {
     flex-direction: column;

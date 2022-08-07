@@ -67,6 +67,14 @@ export class ControlComponent implements AfterViewInit, OnDestroy {
         ) {
           this.loginSuccess();
         }
+
+        if (motion?.type === 'winner' && motion.username === this.username) {
+          window.navigator.vibrate(1000);
+        }
+
+        if (motion?.type === 'loser' && motion.username === this.username) {
+          window.navigator.vibrate([300, 100, 300]);
+        }
       });
   }
 
@@ -130,16 +138,17 @@ export class ControlComponent implements AfterViewInit, OnDestroy {
   }
 
   startAmbientLightSensor() {
-    navigator.permissions
-      .query({ name: 'ambient-light-sensor' as PermissionName })
-      .then((result) => {
-        if (result.state === 'denied') {
-          console.log('Permission to use accelerometer sensor is denied.');
-          return;
-        }
+    if ('AmbientLightSensor' in window) {
+      navigator.permissions
+        .query({ name: 'ambient-light-sensor' as PermissionName })
+        .then((result) => {
+          if (result.state === 'denied') {
+            console.log('Permission to use Ambient Light Sensor is denied.');
+            return;
+          }
 
-        if ('AmbientLightSensor' in window) {
-          window.alert('AmbientLightSensor is available');
+          window.alert('AmbientLightSensor granted access');
+
           this.lightSensor = new AmbientLightSensor();
 
           this.lightSensor.addEventListener('reading', () => {
@@ -151,21 +160,24 @@ export class ControlComponent implements AfterViewInit, OnDestroy {
           });
 
           this.lightSensor.start();
-        }
-      });
+        })
+        .catch(() => {
+          console.log('Integration with Permissions API is not enabled');
+        });
+    }
   }
 
   startGyroscope() {
-    navigator.permissions
-      .query({ name: 'gyroscope' as PermissionName })
-      .then((result) => {
-        if (result.state === 'denied') {
-          console.log('Permission to use accelerometer sensor is denied.');
-          return;
-        }
+    if (typeof Gyroscope === 'function') {
+      navigator.permissions
+        .query({ name: 'gyroscope' as PermissionName })
+        .then((result) => {
+          if (result.state === 'denied') {
+            console.log('Permission to use gyroscope is denied.');
+            return;
+          }
 
-        if (typeof Gyroscope === 'function') {
-          window.alert('Gyroscope is available');
+          window.alert('Gyroscope granted access');
           this.gyroscope = new Gyroscope();
           this.gyroscope.addEventListener('reading', (e) => {
             this.websocketService.sendMessage({
@@ -177,8 +189,11 @@ export class ControlComponent implements AfterViewInit, OnDestroy {
             });
           });
           this.gyroscope?.start();
-        }
-      });
+        })
+        .catch(() => {
+          console.log('Integration with Permissions API is not enabled');
+        });
+    }
   }
 
   startAccelerometer() {
@@ -186,9 +201,10 @@ export class ControlComponent implements AfterViewInit, OnDestroy {
       .query({ name: 'accelerometer' as PermissionName })
       .then((result) => {
         if (result.state === 'denied') {
-          console.log('Permission to use accelerometer sensor is denied.');
+          console.log('Permission to use accelerometer is denied.');
           return;
         }
+        window.alert('Accelerometer granted access');
 
         this.accelerometer = new Accelerometer();
         this.accelerometer.addEventListener('reading', (e) => {
@@ -201,81 +217,76 @@ export class ControlComponent implements AfterViewInit, OnDestroy {
           });
         });
         this.accelerometer?.start();
+      })
+      .catch(() => {
+        console.log('Integration with Permissions API is not enabled');
       });
   }
 
   startRelativeOrientation() {
-    navigator.permissions
-      .query({ name: 'gyroscope' as PermissionName })
-      .then((result) => {
-        if (result.state === 'denied') {
-          console.log('Permission to use gyroscope sensor is denied.');
-          return;
-        }
-        return navigator.permissions.query({
-          name: 'accelerometer' as PermissionName,
-        });
-      })
-      .then((result) => {
-        if (result?.state === 'denied' || !result) {
-          console.log('Permission to use accelerometer sensor is denied.');
-          return;
-        }
-        this.relativeOrientationSensor = new RelativeOrientationSensor({
-          referenceFrame: 'device',
-        });
+    Promise.all([
+      navigator.permissions.query({ name: 'accelerometer' as PermissionName }),
+      navigator.permissions.query({ name: 'gyroscope' as PermissionName }),
+    ])
+      .then((results) => {
+        if (results.every((result) => result.state === 'granted')) {
+          window.alert('RelativeOrientationSensor activated');
 
-        this.relativeOrientationSensor.addEventListener('reading', () => {
-          this.websocketService.sendMessage({
-            username: this.username,
-            type: 'relative-orientation',
-            quaternion: this.relativeOrientationSensor?.quaternion,
+          this.relativeOrientationSensor = new RelativeOrientationSensor({
+            referenceFrame: 'device',
           });
-        });
 
-        this.relativeOrientationSensor.start();
+          this.relativeOrientationSensor.addEventListener('reading', () => {
+            this.websocketService.sendMessage({
+              username: this.username,
+              type: 'relative-orientation',
+              quaternion: this.relativeOrientationSensor?.quaternion,
+            });
+          });
+
+          this.relativeOrientationSensor.start();
+        }
+      })
+      .catch(() => {
+        console.log('Integration with Permissions API is not enabled');
       });
   }
 
   startAbsoluteOrientation() {
-    navigator.permissions
-      .query({ name: 'gyroscope' as PermissionName })
-      .then((result) => {
-        if (result.state === 'denied') {
-          console.log('Permission to use gyroscope sensor is denied.');
-          return;
-        }
-        return navigator.permissions.query({
-          name: 'accelerometer' as PermissionName,
-        });
-      })
-      .then((result) => {
-        if (result?.state === 'denied' || !result) {
-          console.log('Permission to use accelerometer sensor is denied.');
-          return;
-        }
-        return navigator.permissions.query({
-          name: 'magnetometer' as PermissionName,
-        });
-      })
-      .then((result) => {
-        if (result?.state === 'denied' || !result) {
-          console.log('Permission to use magnetometer sensor is denied.');
-          return;
-        }
-        this.absoluteOrientationSensor = new AbsoluteOrientationSensor({
-          referenceFrame: 'device',
-        });
+    Promise.all([
+      navigator.permissions.query({ name: 'accelerometer' as PermissionName }),
+      navigator.permissions.query({ name: 'magnetometer' as PermissionName }),
+      navigator.permissions.query({ name: 'gyroscope' as PermissionName }),
+    ])
+      .then((results) => {
+        if (results.every((result) => result.state === 'granted')) {
+          window.alert('AbsoluteOrientationSensor activated');
 
-        this.absoluteOrientationSensor.addEventListener('reading', () => {
-          this.websocketService.sendMessage({
-            username: this.username,
-            type: 'absolute-orientation',
-            quaternion: this.relativeOrientationSensor?.quaternion,
+          this.absoluteOrientationSensor = new AbsoluteOrientationSensor({
+            referenceFrame: 'device',
           });
-        });
 
-        this.absoluteOrientationSensor.start();
+          this.absoluteOrientationSensor.addEventListener('reading', () => {
+            this.websocketService.sendMessage({
+              username: this.username,
+              type: 'absolute-orientation',
+              quaternion: this.relativeOrientationSensor?.quaternion,
+            });
+          });
+
+          this.absoluteOrientationSensor.start();
+        } else {
+          console.log('Permission to use sensor was denied.');
+        }
+      })
+      .catch(() => {
+        console.log('Integration with Permissions API is not enabled');
       });
+  }
+
+  copy(text: string) {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('Copied to clipboard');
+    });
   }
 }

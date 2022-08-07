@@ -25,45 +25,45 @@
   </div>
 
   <div class="received-data">
-    <table>
+    <table [ngClass]="{ active: kitty || clock }">
       <tr>
-        <th>Accelaration</th>
+        <th colspan="2">DeviceOrientation</th>
       </tr>
       <tr>
-        <td>x</td>
-        <td class="data" id="x"></td>
-      </tr>
-      <tr>
-        <td>y</td>
-        <td class="data" id="y"></td>
-      </tr>
-      <tr>
-        <td>z</td>
-        <td class="data" id="z"></td>
-      </tr>
-    </table>
-
-    <table>
-      <tr>
-        <th>DeviceOrientationEvent</th>
-      </tr>
-      <tr>
-        <td>Motion around Z axis (alpha) (0 to 360)</td>
+        <td>Motion around Z axis (0 to 360)</td>
         <td class="data" id="alpha"></td>
       </tr>
       <tr>
-        <td>Motion around X axis (beta) (-180 to 180)</td>
+        <td>Motion around X axis(-180 to 180)</td>
         <td class="data" id="beta"></td>
       </tr>
       <tr>
-        <td>Motion around Y axis (gamma) (-90 to 90)</td>
+        <td>Motion around Y axis (-90 to 90)</td>
         <td class="data" id="gamma"></td>
       </tr>
     </table>
 
-    <table>
+    <table [ngClass]="{ active: kittygyro }">
       <tr>
-        <th>Relative Orientation quaternion</th>
+        <th colspan="2">Gyroscope</th>
+      </tr>
+      <tr>
+        <td>x</td>
+        <td class="data" id="gx"></td>
+      </tr>
+      <tr>
+        <td>y</td>
+        <td class="data" id="gy"></td>
+      </tr>
+      <tr>
+        <td>z</td>
+        <td class="data" id="gz"></td>
+      </tr>
+    </table>
+
+    <table [ngClass]="{ active: three }">
+      <tr>
+        <th colspan="2">Orientation quaternion</th>
       </tr>
       <tr>
         <td>1</td>
@@ -83,26 +83,62 @@
       </tr>
     </table>
 
-    <table>
+    <table [ngClass]="{ active: clouds }">
       <tr>
-        <th>DeviceLightEvent</th>
+        <th colspan="2">Ambient Light</th>
       </tr>
       <tr>
-        <td>Ambient light <em>(lux)</em></td>
+        <td>lux</td>
         <td class="data" id="light"></td>
+      </tr>
+    </table>
+
+    <table [ngClass]="{ active: compete }">
+      <tr>
+        <th colspan="2">Accelaration</th>
+      </tr>
+      <tr>
+        <td>x</td>
+        <td class="data" id="x"></td>
+      </tr>
+      <tr>
+        <td>y</td>
+        <td class="data" id="y"></td>
+      </tr>
+      <tr>
+        <td>z</td>
+        <td class="data" id="z"></td>
       </tr>
     </table>
   </div>
 
   <div class="playground">
     <div class="buttons">
-      <button (click)="showAnimation('kitty')">Show Kitty</button>
-      <button (click)="showAnimation('clock')">Show Clock</button>
-      <button (click)="showAnimation('cube')">Show Cube</button>
-      <button (click)="showAnimation('clouds')">Show Scenery</button>
+      <button (click)="showAnimation('kitty')">Catwalk</button>
+      <button (click)="showAnimation('kittygyro')">Gyrocat</button>
+      <button (click)="showAnimation('clock')">Clock</button>
+      <button (click)="showAnimation('cube')">Cube</button>
+      <button (click)="showAnimation('clouds')">Sunny day</button>
       <button (click)="showAnimation('compete')">Compete</button>
     </div>
-    <div class="game" #catwalk *ngIf="kitty || compete">
+    <div class="game" *ngIf="kittygyro">
+      <svg
+        class="catwalk"
+        id="svg"
+        version="1.1"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <image
+          x="0"
+          y="40"
+          id="catgyro"
+          href="https://i.giphy.com/media/Z55zlzompYguc/giphy.webp"
+          height="100"
+          width="100"
+        />
+      </svg>
+    </div>
+    <div class="game" *ngIf="kitty || compete">
       <svg
         class="catwalk"
         id="svg"

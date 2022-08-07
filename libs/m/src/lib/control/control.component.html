@@ -1,9 +1,49 @@
 <section>
-  <h1>Application Running!</h1>
-  <input *ngIf="!logged" type="text" #username />
-  <button (click)="login()" *ngIf="!logged">Log IN</button>
-  <button (click)="logout()" *ngIf="logged">Log out</button>
-  <h3 *ngIf="logged">
-    Logged in as <span class="username">{{ username }}</span>
-  </h3>
+  <h1>Welcome to your Gamepad!</h1>
+  <div *ngIf="!logged">
+    <div class="flags-message">
+      <p>Please enable your generic sensor flags:</p>
+      <p>
+        <a
+          href="chrome://flags/#enable-generic-sensor"
+          (click)="copy('chrome://flags/#enable-generic-sensor')"
+          >chrome://flags/#enable-generic-sensor</a
+        >
+      </p>
+      <p>
+        <a
+          href="chrome://flags/#enable-generic-sensor-extra-classes"
+          (click)="copy('chrome://flags/#enable-generic-sensor-extra-classes')"
+          >chrome://flags/#enable-generic-sensor-extra-classes</a
+        >
+      </p>
+      <p>
+        <small>
+          <em
+            >(we need the <code>extra-classes</code> because we are using the
+            AmbientLightSensor)</em
+          ></small
+        >
+      </p>
+    </div>
+    <div>
+      <input *ngIf="!logged" type="text" #username />
+      <button (click)="login()" *ngIf="!logged">Log in</button>
+      <p>
+        <small
+          ><em
+            >Please make sure the playground has started before attempting to
+            log in.</em
+          ></small
+        >
+      </p>
+    </div>
+  </div>
+  <div *ngIf="logged">
+    <h3>
+      Logged in as <span class="username">{{ username }}</span>
+    </h3>
+    <p>Now, start moving your phone and look at the computer screen!</p>
+    <button (click)="logout()" *ngIf="logged">Log out</button>
+  </div>
 </section>

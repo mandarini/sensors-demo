@@ -18,13 +18,23 @@
 table,
 td {
   background-color: white;
-  font-size: 20px;
+  font-size: 16px;
   border: 1px solid purple;
 }
 
 td.data {
   width: 50px;
   background-color: lightgrey;
+}
+
+table.active {
+  background-color: rgb(138, 245, 138);
+  td {
+    background-color: rgb(195, 252, 195);
+  }
+  td.data {
+    background-color: white;
+  }
 }
 
 .playground {
@@ -91,6 +101,7 @@ svg.clouds {
 
 .hidden {
   visibility: hidden;
+  height: 0;
 }
 
 .game {

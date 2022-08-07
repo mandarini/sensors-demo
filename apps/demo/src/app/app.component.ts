@@ -1,15 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { WebsocketService } from '@sensor-demo/motions-data';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'sensor-demo-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit {
-  constructor(private websocketService: WebsocketService) {}
-
-  ngOnInit() {
-    this.websocketService.connect();
-  }
-}
+export class AppComponent {}

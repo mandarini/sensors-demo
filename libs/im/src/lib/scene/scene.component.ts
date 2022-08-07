@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   OnDestroy,
+  OnInit,
   ViewChild,
 } from '@angular/core';
 import * as THREE from 'three';
@@ -21,9 +22,10 @@ import { Subscription } from 'rxjs';
   templateUrl: './scene.component.html',
   styleUrls: ['./scene.component.scss'],
 })
-export class SceneComponent implements AfterViewInit, OnDestroy {
+export class SceneComponent implements AfterViewInit, OnDestroy, OnInit {
   title = 'app';
   kitty = false;
+  kittygyro = false;
   clock: boolean;
   three = false;
   compete: boolean;
@@ -49,6 +51,14 @@ export class SceneComponent implements AfterViewInit, OnDestroy {
     private store: Store<MotionsState>,
     private websocketService: WebsocketService
   ) {}
+
+  ngOnInit() {
+    this.websocketService.connect();
+    this.websocketService.sendMessage({
+      username: 'admin',
+      type: 'playground-open',
+    });
+  }
 
   ngAfterViewInit() {
     this.container = this.elementRef.nativeElement;
@@ -106,12 +116,20 @@ export class SceneComponent implements AfterViewInit, OnDestroy {
               this.rotateCube(motion.quaternion as number[]);
               break;
             case 'accelerometer':
-              // move the cube
+              // compete
               this.acceleration(
                 motion.x as number,
                 motion.y as number,
                 motion.z as number,
                 motion.username
+              );
+              break;
+            case 'gyroscope':
+              // move the gyrocat
+              this.gyromove(
+                Math.round(motion.x as number),
+                Math.round(motion.y as number),
+                Math.round(motion.z as number)
               );
               break;
             case 'logout':
@@ -164,10 +182,12 @@ export class SceneComponent implements AfterViewInit, OnDestroy {
       material = new THREE.MeshBasicMaterial({
         color: 0xffffff,
         wireframe: true,
+        wireframeLinewidth: 8,
+        wireframeLinecap: 'round',
       });
 
     this.cube = new THREE.Mesh(geometry, material);
-    this.cube.position.set(-50, -50, -50);
+    this.cube.position.set(0, 0, 0);
 
     this.scene.add(this.cube);
 
@@ -213,6 +233,18 @@ export class SceneComponent implements AfterViewInit, OnDestroy {
           if (current - normalizedNumber / 10 <= 0) {
             this.startCompeting = false;
             this.winner = 'Group A';
+            this.groupA.forEach((user) => {
+              this.websocketService.sendMessage({
+                username: user,
+                type: 'winner',
+              });
+            });
+            this.groupB.forEach((user) => {
+              this.websocketService.sendMessage({
+                username: user,
+                type: 'loser',
+              });
+            });
           }
         } else if (this.groupB.includes(userName)) {
           document
@@ -221,6 +253,18 @@ export class SceneComponent implements AfterViewInit, OnDestroy {
           if (current + normalizedNumber / 10 >= 1080) {
             this.startCompeting = false;
             this.winner = 'Group B';
+            this.groupB.forEach((user) => {
+              this.websocketService.sendMessage({
+                username: user,
+                type: 'winner',
+              });
+            });
+            this.groupA.forEach((user) => {
+              this.websocketService.sendMessage({
+                username: user,
+                type: 'loser',
+              });
+            });
           }
         }
       }
@@ -229,14 +273,53 @@ export class SceneComponent implements AfterViewInit, OnDestroy {
 
   rotateCube(quaternion: number[]) {
     this.cube?.quaternion.fromArray(quaternion).invert();
-    (document.getElementById('quaternion1') as HTMLElement).innerHTML =
-      Math.round(quaternion[0] as number).toString();
-    (document.getElementById('quaternion2') as HTMLElement).innerHTML =
-      Math.round(quaternion[1] as number).toString();
-    (document.getElementById('quaternion3') as HTMLElement).innerHTML =
-      Math.round(quaternion[2] as number).toString();
-    (document.getElementById('quaternion4') as HTMLElement).innerHTML =
-      Math.round(quaternion[3] as number).toString();
+    (document.getElementById('quaternion1') as HTMLElement).innerHTML = (
+      quaternion[0] as number
+    )
+      .toFixed(3)
+      .toString();
+    (document.getElementById('quaternion2') as HTMLElement).innerHTML = (
+      quaternion[1] as number
+    )
+      .toFixed(3)
+      .toString();
+    (document.getElementById('quaternion3') as HTMLElement).innerHTML = (
+      quaternion[2] as number
+    )
+      .toFixed(3)
+      .toString();
+    (document.getElementById('quaternion4') as HTMLElement).innerHTML = (
+      quaternion[3] as number
+    )
+      .toFixed(3)
+      .toString();
+  }
+
+  gyromove(x: number, y: number, z: number) {
+    (document.getElementById('gx') as HTMLElement).innerHTML = Math.round(
+      x as number
+    ).toString();
+    (document.getElementById('gy') as HTMLElement).innerHTML = Math.round(
+      y as number
+    ).toString();
+    (document.getElementById('gz') as HTMLElement).innerHTML = Math.round(
+      z as number
+    ).toString();
+    if (document?.getElementById('catgyro')?.getAttribute('x')) {
+      const current = parseInt(
+        (
+          (document as Document).getElementById('catgyro') as HTMLElement
+        ).getAttribute('x') as string
+      );
+      const addedMotion = Math.abs(x);
+      const normalizedNumber = mapNumber(addedMotion, 0, 10, 0, 100);
+      document
+        ?.getElementById('catgyro')
+        ?.setAttribute('x', (current + normalizedNumber).toString());
+      if (current + normalizedNumber >= 1080) {
+        document?.getElementById('catgyro')?.setAttribute('x', '0');
+      }
+    }
   }
 
   move(b: number, g: number, a: number) {
@@ -258,7 +341,7 @@ export class SceneComponent implements AfterViewInit, OnDestroy {
     if (this.clock) {
       document
         ?.getElementById('clockhand')
-        ?.setAttribute('transform', `rotate(${360 - a} 300 300)`);
+        ?.setAttribute('transform', `rotate(${360 - b} 300 300)`);
     }
   }
 
@@ -297,7 +380,20 @@ export class SceneComponent implements AfterViewInit, OnDestroy {
   }
 
   showAnimation(elem: string) {
+    if (elem === 'kittygyro') {
+      this.kittygyro = true;
+      this.kitty = false;
+      this.clock = false;
+      this.three = false;
+      this.compete = false;
+      this.startCompeting = false;
+      this.clouds = false;
+      setTimeout(() => {
+        document?.getElementById('catgyro')?.setAttribute('x', `${0}`);
+      }, 300);
+    }
     if (elem === 'kitty') {
+      this.kittygyro = false;
       this.kitty = true;
       this.clock = false;
       this.three = false;
@@ -306,6 +402,7 @@ export class SceneComponent implements AfterViewInit, OnDestroy {
       this.clouds = false;
     }
     if (elem === 'clock') {
+      this.kittygyro = false;
       this.kitty = false;
       this.clock = true;
       this.three = false;
@@ -314,6 +411,7 @@ export class SceneComponent implements AfterViewInit, OnDestroy {
       this.clouds = false;
     }
     if (elem === 'cube') {
+      this.kittygyro = false;
       this.kitty = false;
       this.clock = false;
       this.three = true;
@@ -322,6 +420,7 @@ export class SceneComponent implements AfterViewInit, OnDestroy {
       this.clouds = false;
     }
     if (elem === 'compete') {
+      this.kittygyro = false;
       this.compete = true;
       this.kitty = false;
       this.clock = false;
@@ -332,6 +431,7 @@ export class SceneComponent implements AfterViewInit, OnDestroy {
       }, 300);
     }
     if (elem === 'clouds') {
+      this.kittygyro = false;
       this.kitty = false;
       this.clock = false;
       this.three = false;

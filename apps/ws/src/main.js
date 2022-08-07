@@ -12,7 +12,10 @@ const io = require('socket.io')(http, {
 const port = process.env.PORT || 3000;
 
 function onConnection(socket) {
-  socket.on('drawing', (data) => socket.broadcast.emit('drawing', data));
+  socket.on('drawing', (data) => {
+    console.log('Received: ', data);
+    return socket.broadcast.emit('drawing', data);
+  });
   socket.on('disconnect', () => console.log('Client disconnected'));
 }
 
