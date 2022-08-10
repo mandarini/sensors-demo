@@ -4,6 +4,8 @@ _translate physical motion to virtual motion across devices_
 
 This is a demo for the Generic Sensor API for the web. You can see its live version in the following link: [ws-pakotinia.web.app](https://ws-pakotinia.web.app).
 
+You can view the slides of the presentation here: [mandarini.github.io/sensors/](https://mandarini.github.io/sensors/).
+
 ## Contents
 
 - [Purpose](#purpose)
