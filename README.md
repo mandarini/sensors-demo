@@ -6,6 +6,8 @@ This is a demo for the Generic Sensor API for the web. You can see its live vers
 
 You can view the full docs page here: [mandarini.github.io/sensors-demo/](https://mandarini.github.io/sensors-demo/).
 
+You can view the slides of the presentation here: [mandarini.github.io/sensors/](https://mandarini.github.io/sensors/).
+
 ## Contents
 
 - [Purpose](#purpose)
